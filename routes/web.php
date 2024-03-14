@@ -71,15 +71,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['web', 'isAdmin']], function
     Route::get('/manage-role', [AdminController::class, 'manageRole'])->name('manageRole');
     Route::post('/update-role', [AdminController::class, 'updateRole'])->name('updateRole');
 
-
-    Route::get('/agents', [AdminController::class, 'agents'])->name('AgentUsers');
-    Route::get('/add-agent', [AdminController::class, 'AddAgent'])->name('addagent');
-    Route::post('/post-add-super-agent', [AdminController::class, 'PostAddAgent'])->name('postaddsuperagent');
-    Route::get('/edit-agent/{id}', [AdminController::class, 'editviewAgent'])->name('editagent');
-    Route::post('/edit-agent/{id}', [AdminController::class, 'UpdateAgent'])->name('posteditagent');
-    Route::get('/delete-agent/{id}', [AdminController::class, 'DeleteAgent'])->name('deleteagent');
-    Route::get('/view-agent/{id}', [AdminController::class, 'ViewAgent'])->name('viewagent');
-
     //super agent list
     Route::get('/manage-super-agent', [AdminController::class, 'manageSuperAgent'])->name('manageSuperAgent');
     Route::get('/add-super-agent', [AdminController::class, 'addSuperAgent'])->name('addSuperAgent');
@@ -90,15 +81,25 @@ Route::group(['prefix' => 'admin', 'middleware' => ['web', 'isAdmin']], function
     Route::get('/view-super-agent/{id}', [AdminController::class, 'viewSuperAgent'])->name('viewSuperAgent');
 
 
-
     //master agent list
     Route::get('/manage-master-agent/{agentId?}', [AdminController::class, 'manageMasterAgent'])->name('manageMasterAgent');
-
     Route::get('/add-master-agent', [AdminController::class, 'addMasterAgent'])->name('addMasterAgent');
     Route::post('/post-master-agent', [AdminController::class, 'postMasterAgent'])->name('postMasterAgent');
+    Route::get('/edit-master-agent/{id}', [AdminController::class, 'editMasterAgent'])->name('editMasterAgent');
+    Route::post('/update-master-agent/{id}', [AdminController::class, 'updateMasterAgent'])->name('updateMasterAgent');
+    Route::get('/delete-master-agent/{id}', [AdminController::class, 'deleteMasterAgent'])->name('deleteMasterAgent');
+    Route::get('/view-master-agent/{id}', [AdminController::class, 'viewMasterAgent'])->name('viewMasterAgent');
+
 
     //agent list
-    Route::get('/manage-agent', [AdminController::class, 'manageAgent'])->name('manageAgent');
+    Route::get('/manage-agent/{agentId?}', [AdminController::class, 'manageAgent'])->name('manageAgent');
+    Route::get('/add-agent', [AdminController::class, 'AddAgent'])->name('AddAgent');
+    Route::post('/post-agent', [AdminController::class, 'postAgent'])->name('postAgent');
+    Route::get('/edit-agent/{id}', [AdminController::class, 'editAgent'])->name('editAgent');
+    Route::post('/update-agent/{id}', [AdminController::class, 'updateAgent'])->name('updateAgent');
+    Route::get('/delete-agent/{id}', [AdminController::class, 'deleteAgent'])->name('deleteAgent');
+    Route::get('/view-agent/{id}', [AdminController::class, 'viewAgent'])->name('viewAgent');
+
 
     //player routes
     Route::get('/manage-players', [AdminController::class, 'managePlayers'])->name('managePlayers');

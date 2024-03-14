@@ -1,5 +1,7 @@
 @extends('layout/layouts')
 
+
+
 @section('space-work')
     <!-- Content Header (Page header) -->
 
@@ -11,7 +13,7 @@
 
                 <div class="col-sm-6">
 
-                    <h1>Super Agent List</h1>
+                    <h1>Agent List</h1>
 
                 </div>
 
@@ -21,7 +23,7 @@
 
                         <li class="breadcrumb-item"><a href="{{ route('Dashboard') }}">Dashboard</a></li>
 
-                        <li class="breadcrumb-item active">Super Agent List</li>
+                        <li class="breadcrumb-item active">Agent List</li>
 
                     </ol>
 
@@ -101,9 +103,8 @@
 
                             <div style="float:right">
 
-                                <a href="{{ route('addSuperAgent') }}" class="btn btn-block btn-primary"
-                                    style="float:right;">
-                                    Add</a>
+                                <a href="{{ route('AddAgent') }}" class="btn btn-block btn-primary" style="float:right;">
+                                    Add Agent</a>
 
                             </div>
 
@@ -114,57 +115,65 @@
                         <div class="card-body">
 
                             <table id="example1" class="table table-bordered table-hover">
-
                                 <thead>
-
                                     <tr>
-
                                         <th>S no.</th>
                                         <th>Name</th>
                                         <th>Email</th>
+                                        <th>Master Agent</th>
                                         <th>Telegram Id</th>
                                         <th>Group Telegram Id</th>
                                         <th>Commission on Wins(%)</th>
                                         <th>Commission on Losses(%)</th>
-                                        <th>Agents</th>
+                                        <th>Players</th>
                                         <th>Action</th>
 
                                     </tr>
 
                                 </thead>
+
                                 <tbody>
-                                    <?php $i = 1; ?>
-                                    @foreach ($superagents as $agents)
+                                    <?php
+                                    use App\Models\User;
+                                    $i = 1;
+                                    ?>
+                                    @foreach ($allagents as $agents)
+                                        <?php
+                                        
+                                        $masteragent = App\Models\User::find($agents->sub_agent_id);
+                                        ?>
                                         <tr>
                                             <td>{{ $i }}</td>
                                             <td>{{ $agents->name }}</td>
                                             <td>{{ $agents->email }}</td>
+                                            <td>
+                                                @if ($masteragent)
+                                                    {{ $masteragent->name }}
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
                                             <td>{{ $agents->telegram_id }}</td>
                                             <td>{{ $agents->group_tele_id }}</td>
-                                            <td>2%</td>
-                                            <td>5%</td>
+                                            <td>{{ $agents->win_commission }}</td>
+                                            <td>{{ $agents->loss_commission }}</td>
                                             <td>
-                                                <button class="btn btn-dark p-2">
-                                                    <a href="{{ isset($agents->id) ? route('manageMasterAgent', [$agents->id]) : route('manageMasterAgent') }}"
-                                                        class="text-white" style="color: #FFFFFF;">
-                                                        Master
-                                                    </a>
-                                                </button>
-
+                                                <button class="btn btn-dark p-2"><a href="#" class="text-white"
+                                                        style=" color: #FFFFFF;">Player </a></button>
                                             </td>
                                             <td>
                                                 <button class="btn btn-dark p-2"><a
-                                                        href="{{ route('editSuperAgent', [$agents->id]) }}"
-                                                        class="text-white" style=" color: #FFFFFF;"><i
-                                                            class="fa fa-edit"></i></button></a>
+                                                        href="{{ route('editAgent', [$agents->id]) }}" class="text-white"
+                                                        style=" color: #FFFFFF;"><i class="fa fa-edit"></i></a></button>
+
                                                 <button class="btn  btn-dark p-2"><a
-                                                        href="{{ route('deleteSuperAgent', [$agents->id]) }}"
-                                                        data-id="" class="text-white delete-agent"
-                                                        style=" color: #FFFFFF;"><i class="fa fa-trash"></i></button></a>
+                                                        href="{{ route('deleteAgent', [$agents->id]) }}" data-id=""
+                                                        class="text-white delete-agent" style=" color: #FFFFFF;"><i
+                                                            class="fa fa-trash"></i></a></button>
+
                                                 <button class="btn btn-dark p-2"><a
-                                                        href="{{ route('viewSuperAgent', [$agents->id]) }}"
-                                                        class="text-white" style=" color: #FFFFFF;"><i
-                                                            class="fa fa-eye"></i></button></a>
+                                                        href="{{ route('viewAgent', [$agents->id]) }}" class="text-white"
+                                                        style=" color: #FFFFFF;"><i class="fa fa-eye"></i></a></button>
 
                                             </td>
 

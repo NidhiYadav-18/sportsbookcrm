@@ -1,7 +1,6 @@
 @extends('layout/layouts')
 
 @section('form_js')
-    <script></script>
 @endsection
 
 @section('space-work')
@@ -10,13 +9,13 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Add Agent</h1>
+                    <h1>Edit Super Agent</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ route('Dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('AgentUsers') }}">Agent list</a></li>
-                        <li class="breadcrumb-item active">Add Agent</li>
+                        <li class="breadcrumb-item"><a href="{{ route('manageSuperAgent') }}">Super Agent list</a></li>
+                        <li class="breadcrumb-item active">Edit Super Agent</li>
                     </ol>
                 </div>
             </div>
@@ -33,28 +32,15 @@
         </div> --}}
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <form id="addAgentForm" action="{{ route('postaddsuperagent') }}" method="POST">
+                    <form id="addSuperAgentForm" action="{{ route('updateSuperAgent', $users->id) }}" method="POST">
                         @csrf
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Select Agent Role<span class="text-danger">*</span></label>
-                                    <select class="form-control select2" style="width: 100%;" name="role">
-                                        <option value="">Select role</option>
-                                        <option value="2">Super Agent</option>
-                                        <option value="3">Master Agent</option>
-                                        <option value="4">Agent</option>
-                                    </select>
-                                    @if ($errors->has('role'))
-                                        <span class="text-danger">{{ $errors->first('role') }}</span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
+
+                            <div class="col-md-12">
                                 <div class="form-group">
                                     <label>First Name/Alias<span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="first_name"
-                                        placeholder="First Name/Alias" name="first_name">
+                                        placeholder="First Name/Alias" name="first_name" value="{{ $users->name }}">
                                     @if ($errors->has('first_name'))
                                         <span class="text-danger">{{ $errors->first('first_name') }}</span>
                                     @endif
@@ -67,7 +53,7 @@
                                 <div class="form-group">
                                     <label>Email<span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="email" placeholder="Email"
-                                        name="email">
+                                        name="email" value="{{ $users->email }}">
                                     @if ($errors->has('email'))
                                         <span class="text-danger">{{ $errors->first('email') }}</span>
                                     @endif
@@ -76,13 +62,21 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Password <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" id="password" placeholder="Password"
-                                        name="password">
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="password" placeholder="Password"
+                                            name="password">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                     @if ($errors->has('password'))
                                         <span class="text-danger">{{ $errors->first('password') }}</span>
                                     @endif
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="row">
@@ -90,7 +84,7 @@
                                 <div class="form-group">
                                     <label>Telegram ID<span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="tele_id" placeholder="Telegram ID"
-                                        name="tele_id">
+                                        name="tele_id" value="{{ $users->telegram_id }}">
                                     @if ($errors->has('tele_id'))
                                         <span class="text-danger">{{ $errors->first('tele_id') }}</span>
                                     @endif
@@ -100,7 +94,8 @@
                                 <div class="form-group">
                                     <label>Group Telegram ID</label>
                                     <input type="text" class="form-control" id="group_tele_id"
-                                        placeholder="Group Telegram ID" name="group_tele_id">
+                                        placeholder="Group Telegram ID" name="group_tele_id"
+                                        value="{{ $users->group_tele_id }}">
                                 </div>
                             </div>
                         </div>
@@ -108,15 +103,25 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Percentage of wins and losses </label>
-                                    <input type="number" class="form-control" id="per_win_loss"
-                                        placeholder="Percentage of wins and losses" name="per_win_loss">
+                                    <label>Commission on Wins(%)</label>
+                                    <input type="text" class="form-control" id="win_commission"
+                                        placeholder="Commission on Wins(%)" name="win_commission"
+                                        value="{{ $users->win_commission }}">
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Commission on Losses(%)</label>
+                                    <input type="text" class="form-control" id="loss_commission"
+                                        placeholder="Commission on Wins(%)" name="loss_commission"
+                                        value="{{ $users->loss_commission }}">
+                                </div>
+                            </div>
+
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            <button type="submit" id="submitFormBtn" class="btn btn-primary">Submit</button>
+                            <button type="submit" id="submitFormBtn" class="btn btn-primary">Update</button>
                         </div>
                     </form>
 

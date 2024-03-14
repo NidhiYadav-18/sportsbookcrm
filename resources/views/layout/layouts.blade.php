@@ -128,37 +128,6 @@
                     </div>
                 @endif
 
-
-                <!-- Sidebar Menu -->
-                <!--<nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-            @if (auth()->user()->role == 1)
-<li class="nav-item {{ request()->routeIs('AgentUsers', 'managePlayers', 'addagent', 'editagent', 'viewagent', 'addPlayers', 'editplayer', 'viewplayer') ? 'menu-open' : '' }}">
-              <a href="#" class="nav-link {{ request()->routeIs('AgentUsers') ? 'active' : '' }}">
-              <i class="nav-icon fa fa-users"></i>
-              <p>
-                  User Management
-                  <i class="fas fa-angle-left right"></i>
-              </p>
-              </a>
-              <ul class="nav nav-treeview">
-              <li class="nav-item">
-                  <a href="{{ route('AgentUsers') }}" class="nav-link {{ request()->routeIs('AgentUsers', 'addagent', 'editagent', 'viewagent') ? 'active' : '' }}">
-                  <i class="nav-icon fa fa-user text-info"></i>
-                  <p>Agents</p>
-                  </a>
-              </li>
-              <li class="nav-item">
-                  <a href="{{ route('managePlayers') }}" class="nav-link {{ request()->routeIs('managePlayers', 'addPlayers', 'editplayer', 'viewplayer') ? 'active' : '' }}">
-                  <i class="nav-icon fa fa-user text-info"></i>
-                  <p>Players</p>
-                  </a>
-              </li>
-              </ul>
-          </li>
-@endif
-        </ul>
-      </nav> -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
@@ -170,39 +139,70 @@
                                 </a>
                             </li>
 
-
-                            <li class="nav-item">
-                                <a href="{{ route('AgentUsers') }}"
-                                    class="nav-link {{ request()->routeIs('AgentUsers', 'addagent', 'editagent', 'viewagent') ? 'active' : '' }}">
+                            <li
+                                class="nav-item {{ request()->routeIs(
+                                    'manageSuperAgent',
+                                    'addSuperAgent',
+                                    'editSuperAgent',
+                                    'viewSuperAgent',
+                                    'manageMasterAgent',
+                                    'addMasterAgent',
+                                    'editMasterAgent',
+                                    'viewMasterAgent',
+                                    'manageAgent',
+                                    'addAgent',
+                                    'editAgent',
+                                    'viewAgent',
+                                )
+                                    ? 'menu-open'
+                                    : '' }}">
+                                <a href="#"
+                                    class="nav-link {{ request()->routeIs(
+                                        'manageSuperAgent',
+                                        'addSuperAgent',
+                                        'editSuperAgent',
+                                        'viewSuperAgent',
+                                        'manageMasterAgent',
+                                        'addMasterAgent',
+                                        'editMasterAgent',
+                                        'viewMasterAgent',
+                                        'manageAgent',
+                                        'addAgent',
+                                        'editAgent',
+                                        'viewAgent',
+                                    )
+                                        ? 'active'
+                                        : '' }}">
                                     <i class="nav-icon fa fa-users"></i>
                                     <p>Agent Management <i class="fas fa-angle-left right"></i></p>
-
                                 </a>
 
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
                                         <a href="{{ route('manageSuperAgent') }}"
-                                            class="nav-link {{ request()->routeIs('AgentUsers', 'addagent', 'editagent', 'viewagent') ? 'active' : '' }}">
+                                            class="nav-link {{ request()->routeIs('manageSuperAgent', 'addSuperAgent', 'editSuperAgent', 'viewSuperAgent') ? 'active' : '' }}">
                                             <i class="nav-icon fa fa-user text-info"></i>
                                             <p>Super Agent</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="{{ route('manageMasterAgent') }}"
-                                            class="nav-link {{ request()->routeIs('managePlayers', 'addPlayers', 'editplayer', 'viewplayer') ? 'active' : '' }}">
+                                            class="nav-link {{ request()->routeIs('manageMasterAgent', 'addMasterAgent', 'editMasterAgent', 'viewMasterAgent') ? 'active' : '' }}">
                                             <i class="nav-icon fa fa-user text-info"></i>
                                             <p>Master Agent</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="{{ route('manageAgent') }}"
-                                            class="nav-link {{ request()->routeIs('managePlayers', 'addPlayers', 'editplayer', 'viewplayer') ? 'active' : '' }}">
+                                            class="nav-link {{ request()->routeIs('manageAgent', 'addAgent', 'editAgent', 'viewAgent') ? 'active' : '' }}">
                                             <i class="nav-icon fa fa-user text-info"></i>
                                             <p>Agent</p>
                                         </a>
                                     </li>
                                 </ul>
                             </li>
+
+
 
 
                             <li class="nav-item">
@@ -221,7 +221,7 @@
                                 </a>
                             </li>
                         @endif
-
+                        </li>
                     </ul>
                 </nav>
 
@@ -349,6 +349,19 @@
         $('#timepicker2').datetimepicker({
             format: 'LT'
         })
+    </script>
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function(e) {
+            // toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            // toggle the eye icon
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
     </script>
 </body>
 

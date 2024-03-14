@@ -15,21 +15,16 @@ class AdminController extends Controller
         return view('admin.dashboard');
     }
 
-    public function agents()
-    {
-        $users = User::with('roles')->whereIn("role", [2, 3, 4])->get();
-        return view('admin.agents', compact('users'));
-    }
-
+    // ********** Super Agent *********
     public function manageSuperAgent()
     {
         $superagents = User::with('roles')->whereIn("role", [2])->get();
-        return view('admin.manage-super-agent', compact('superagents'));
+        return view('admin.admin-super-agent.manage-super-agent', compact('superagents'));
     }
 
     public function addSuperAgent()
     {
-        return view("admin.add-super-agent");
+        return view("admin.admin-super-agent.add-super-agent");
     }
 
     public function postSuperAgent(Request $request)
@@ -66,7 +61,7 @@ class AdminController extends Controller
     public function editSuperAgent($id)
     {
         $users = User::find($id);
-        return view("admin.edit-super-agent", compact("users"));
+        return view("admin.admin-super-agent.edit-super-agent", compact("users"));
     }
 
     public function updateSuperAgent(Request $request, $id)
@@ -106,40 +101,46 @@ class AdminController extends Controller
 
             return redirect()
                 ->route("manageSuperAgent")
-                ->with("success", "Agent has been updated successfully.");
+                ->with("success", "Super Agent has been updated successfully.");
         }
     }
 
-    // Delete agent
     public function deleteSuperAgent($id)
     {
         $agent_id = $id;
-        // // dd($user_id);
         $deleteUser = User::find($agent_id);
         $res = $deleteUser->delete();
         if ($res == true) {
-            return back()->with("success", "Agent has been deleted successfully.");
+            return back()->with("success", "Super Agent has been deleted successfully.");
         } else {
             return back()->with("failed", "Data not deleted.");
         }
     }
 
-    // View Agent
     public function ViewSuperAgent($id)
     {
-        $agent = User::find($id);
-        return view("admin.view-super-agent", compact("agent"));
+        $users = User::find($id);
+        return view("admin.admin-super-agent.view-super-agent", compact("users"));
     }
 
+    // ********** Master Agent *********
+    public function manageMasterAgent($agentId = null)
+    {
+        // Assuming role is a field in the users table
+        $query = User::with('roles')->where("role", 3);
 
+        if ($agentId) {
+            $query->where('sub_agent_id', $agentId);
+        }
+        $masteragents = $query->get();
 
-
-
+        return view('admin.admin-master-agent.manage-master-agent', compact('masteragents'));
+    }
 
     public function addMasterAgent()
     {
         $superagents = User::with('roles')->whereIn("role", [2])->get();
-        return view("admin.add-master-agent", compact('superagents'));
+        return view("admin.admin-master-agent.add-master-agent", compact('superagents'));
     }
 
     public function postMasterAgent(Request $request)
@@ -174,81 +175,24 @@ class AdminController extends Controller
         }
     }
 
-    public function manageMasterAgent($agentId = null)
-    {
-        // Assuming role is a field in the users table
-        $query = User::with('roles')->where("role", 3);
-
-        if ($agentId) {
-            $query->where('sub_agent_id', $agentId);
-        }
-        $masteragents = $query->get();
-
-        return view('admin.manage-master-agent', compact('masteragents'));
-    }
-
-
-
-
-
-
-
-    public function manageAgent()
-    {
-        $agents = User::with('roles')->whereIn("role", [4])->get();
-        return view('admin.manage-agents', compact('agents'));
-    }
-
-    public function AddAgent()
-    {
-        return view("admin.add-agent");
-    }
-
-    //Add agent data
-    public function PostAddAgent(Request $request)
-    {
-        $request->validate([
-            'first_name' => 'required',
-            'tele_id' => 'required|unique:users,telegram_id', // Ensure tele_id is unique in the users table
-            'password' => 'required|min:8',
-            'role' => 'required',
-            'email' => 'required|email|unique:users,email', // Ensure email is unique in the users table
-        ]);
-
-        $user = new User();
-        $user->role = $request->role;
-        $user->name = $request->first_name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->telegram_id = $request->tele_id;
-        $user->group_tele_id = $request->group_tele_id;
-        $user->per_win_loss = $request->per_win_loss;
-        $res = $user->save();
-
-        if ($res) {
-            // Redirect to "AgentUsers" route if agent is successfully added
-            return redirect()->route("AgentUsers")->with("success", "Super Agent has been added successfully.");
-        } else {
-            return redirect()->route("AgentUsers")->with("error", "Failed to add Super Agent.");
-        }
-    }
-
-
-    public function editviewAgent($id)
+    public function editMasterAgent($id)
     {
         $users = User::find($id);
-        return view("admin.edit-agent", compact("users"));
+        $superagents = User::with('roles')->whereIn("role", [2])->get();
+        return view("admin.admin-master-agent.edit-master-agent", compact("users", "superagents"));
     }
 
-    //update  agent  data
-    public function UpdateAgent(Request $request, $id)
+    public function updateMasterAgent(Request $request, $id)
     {
         $request->validate([
+            'sub_agent_id' => 'required',
             'first_name' => 'required',
-            'tele_id' => 'required|unique:users,telegram_id,' . $id, // Ensure tele_id is unique in the users table
+            'tele_id' => 'required|unique:users,telegram_id,' . $id,
             //'password' => 'required|min:8',
-            'role' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
+            'win_commission' => 'required',
+            'loss_commission' => 'required',
+
 
         ]);
 
@@ -263,26 +207,145 @@ class AdminController extends Controller
             } else {
                 $pass = $userfind->password;
             }
-
+            $userfind->sub_agent_id = $request->sub_agent_id;
             $userfind->name = $request->first_name;
             $userfind->email = $request->email;
             $userfind->telegram_id = $request->tele_id;
             $userfind->group_tele_id = $request->group_tele_id;
-            $userfind->per_win_loss = $request->per_win_loss;
+            $userfind->win_commission = $request->win_commission;
+            $userfind->loss_commission = $request->loss_commission;
             $userfind->password = $pass;
-            $userfind->role = $request->role;
+            $userfind->role = 3;
             $userfind->save();
 
             return redirect()
-                ->route("AgentUsers")
-                ->with("success", "Agent has been updated successfully.");
+                ->route("manageMasterAgent")
+                ->with("success", "Master Agent has been updated successfully.");
+        }
+    }
+
+    public function deleteMasterAgent($id)
+    {
+        $agent_id = $id;
+        $deleteUser = User::find($agent_id);
+        $res = $deleteUser->delete();
+        if ($res == true) {
+            return back()->with("success", "Master Agent has been deleted successfully.");
+        } else {
+            return back()->with("failed", "Data not deleted.");
+        }
+    }
+
+    public function ViewMasterAgent($id)
+    {
+        $users = User::find($id);
+        $superagents = User::with('roles')->whereIn("role", [2])->get();
+        return view("admin.admin-master-agent.view-master-agent", compact("users", "superagents"));
+    }
+
+    // ********** Agent *********
+
+    public function manageAgent($agentId = null)
+    {
+        $query = User::with('roles')->where("role", 4);
+
+        if ($agentId) {
+            $query->where('sub_agent_id', $agentId);
+        }
+        $allagents = $query->get();
+
+        return view('admin.admin-agent.manage-agent', compact('allagents'));
+    }
+
+    public function AddAgent()
+    {
+        $masteragents = User::with('roles')->whereIn("role", [3])->get();
+        return view("admin.admin-agent.add-agent", compact('masteragents'));
+    }
+
+    public function postAgent(Request $request)
+    {
+        $request->validate([
+            'sub_agent_id' => 'required',
+            'first_name' => 'required',
+            'tele_id' => 'required|unique:users,telegram_id',
+            'password' => 'required|min:8',
+            'email' => 'required|email|unique:users,email',
+            'win_commission' => 'required',
+            'loss_commission' => 'required',
+        ]);
+
+        $user = new User();
+        $user->sub_agent_id = $request->sub_agent_id;
+        $user->role = 4;
+        $user->name = $request->first_name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->telegram_id = $request->tele_id;
+        $user->group_tele_id = $request->group_tele_id;
+        $user->win_commission = $request->win_commission;
+        $user->loss_commission = $request->loss_commission;
+
+        $res = $user->save();
+
+        if ($res) {
+            return redirect()->route("manageAgent")->with("success", "Agent has been added successfully.");
+        } else {
+            return redirect()->route("manageAgent")->with("error", "Failed to add Agent.");
         }
     }
 
 
+    public function editAgent($id)
+    {
+        $users = User::find($id);
+        $masteragents = User::with('roles')->whereIn("role", [3])->get();
+        return view("admin.admin-agent.edit-agent", compact("users", "masteragents"));
+    }
 
-    // Delete agent
-    public function DeleteAgent($id)
+    public function updateAgent(Request $request, $id)
+    {
+        $request->validate([
+            'sub_agent_id' => 'required',
+            'first_name' => 'required',
+            'tele_id' => 'required|unique:users,telegram_id,' . $id,
+            //'password' => 'required|min:8',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'win_commission' => 'required',
+            'loss_commission' => 'required',
+
+
+        ]);
+
+        $userfind = User::find($id);
+
+        if (empty($userfind)) {
+            return back()->with("failed", "Data not found");
+        } else {
+
+            if ($request->password) {
+                $pass = Hash::make($request->password);
+            } else {
+                $pass = $userfind->password;
+            }
+            $userfind->sub_agent_id = $request->sub_agent_id;
+            $userfind->name = $request->first_name;
+            $userfind->email = $request->email;
+            $userfind->telegram_id = $request->tele_id;
+            $userfind->group_tele_id = $request->group_tele_id;
+            $userfind->win_commission = $request->win_commission;
+            $userfind->loss_commission = $request->loss_commission;
+            $userfind->password = $pass;
+            $userfind->role = 4;
+            $userfind->save();
+
+            return redirect()
+                ->route("manageAgent")
+                ->with("success", "Agent has been updated successfully.");
+        }
+    }
+
+    public function deleteAgent($id)
     {
         $agent_id = $id;
         // // dd($user_id);
@@ -295,11 +358,11 @@ class AdminController extends Controller
         }
     }
 
-    // View Agent
-    public function ViewAgent($id)
+    public function viewAgent($id)
     {
-        $agent = User::find($id);
-        return view("admin.view-agent", compact("agent"));
+        $users = User::find($id);
+        $masteragents = User::with('roles')->whereIn("role", [3])->get();
+        return view("admin.admin-agent.view-agent", compact("users", "masteragents"));
     }
 
 
@@ -307,15 +370,15 @@ class AdminController extends Controller
     public function managePlayers()
     {
         $players = Player::get();
-        $agents = User::with('roles')->whereIn("role", [2, 3, 4])->get();
-        return view('admin.manage-players', compact('players', 'agents'));
+        //$agents =  User::with('roles')->where("role", 4);
+        return view('admin.admin-player.manage-players', compact('players'));
     }
 
     //Show add  player form
     public function addPlayers()
     {
-        $agents = User::with('roles')->whereIn("role", [2, 3, 4])->get();
-        return view("admin.add-players", compact('agents'));
+        $agents = User::with('roles')->whereIn("role", [4])->get();
+        return view("admin.admin-player.add-players", compact('agents'));
     }
 
     // Add player data
@@ -349,8 +412,8 @@ class AdminController extends Controller
     public function editviewPlayer($id)
     {
         $player = Player::find($id);
-        $agents = User::with('roles')->whereIn("role", [2, 3, 4])->get();
-        return view("admin.edit-player", compact("player", 'agents'));
+        $agents = User::with('roles')->whereIn("role", [4])->get();
+        return view("admin.admin-player.edit-player", compact("player", 'agents'));
     }
 
     //update  player  data
@@ -409,7 +472,7 @@ class AdminController extends Controller
     {
         $player = Player::find($id);
         $agents = User::with('roles')->whereIn("role", [2, 3, 4])->get();
-        return view("admin.view-player", compact("player", 'agents'));
+        return view("admin.admin-player.view-player", compact("player", 'agents'));
     }
 
     public function manageRole()
