@@ -115,6 +115,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['web', 'isAdmin']], function
     Route::get('/add-transaction', [TransactionController::class, 'Addtransactoin'])->name('addtransaction');
     Route::post('/post-add-transaction', [TransactionController::class, 'PostAddtransactoin'])->name('postaddtransaction');
     Route::get('/view-transaction/{id}', [TransactionController::class, 'Viewtransactoin'])->name('viewtransaction');
+    Route::get('/edit-transaction/{id}', [TransactionController::class, 'Edittransactoin'])->name('edittransaction');
+    Route::post('/edit-transaction/{id}', [TransactionController::class, 'PostEdittransactoin'])->name('postedittransaction');
+    Route::get('/delete-transaction/{id}', [TransactionController::class, 'DeleteTransaction'])->name('deletetransaction');
 });
 
 // ********** Super Agent Routes *********
